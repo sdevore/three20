@@ -9,7 +9,7 @@
  *
  * If the data is not valid, return an error.  The data will not be cached if there is an error.
  */
-- (NSError*)request:(TTURLRequest*)request processResponse:(NSHTTPURLResponse*)response
+- (NSError*)request:(TTURLRequest*)request processResponse:(NSURLResponse*)response
             data:(id)data;
 
 @end

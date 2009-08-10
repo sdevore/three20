@@ -23,7 +23,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // TTURLResponse
 
-- (NSError*)request:(TTURLRequest*)request processResponse:(NSHTTPURLResponse*)response
+- (NSError*)request:(TTURLRequest*)request processResponse:(NSURLResponse*)response
             data:(id)data {
   if ([data isKindOfClass:[NSData class]]) {
     _data = [data retain];
@@ -54,7 +54,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // TTURLResponse
 
-- (NSError*)request:(TTURLRequest*)request processResponse:(NSHTTPURLResponse*)response
+- (NSError*)request:(TTURLRequest*)request processResponse:(NSURLResponse*)response
             data:(id)data {
   if ([data isKindOfClass:[UIImage class]]) {
     _image = [data retain];

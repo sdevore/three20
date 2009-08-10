@@ -26,7 +26,7 @@ static TTURLRequestQueue* gMainQueue = nil;
   NSTimeInterval _cacheExpirationAge;
   NSMutableArray* _requests;
   NSURLConnection* _connection;
-  NSHTTPURLResponse* _response;
+  NSURLResponse* _response;
   NSMutableData* _responseData;
   int _retriesLeft;
 }
@@ -101,7 +101,7 @@ static TTURLRequestQueue* gMainQueue = nil;
   [requestsToCancel release];
 }
 
-- (NSError*)processResponse:(NSHTTPURLResponse*)response data:(id)data {
+- (NSError*)processResponse:(NSURLResponse*)response data:(id)data {
   for (TTURLRequest* request in _requests) {
     NSError* error = [request.response request:request processResponse:response data:data];
     if (error) {
@@ -152,15 +152,20 @@ static TTURLRequestQueue* gMainQueue = nil;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // NSURLConnectionDelegate
  
-- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSHTTPURLResponse*)response {
+- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse*)response {
   _response = [response retain];
-  NSDictionary* headers = [response allHeaderFields];
-  int contentLength = [[headers objectForKey:@"Content-Length"] intValue];
-  if (contentLength > _queue.maxContentLength && _queue.maxContentLength) {
-    TTLOG(@"MAX CONTENT LENGTH EXCEEDED (%d) %@", contentLength, _URL);
-    [self cancel];
+  
+  int contentLength = 0;
+  
+  if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+	  NSDictionary* headers = [(NSHTTPURLResponse*)response allHeaderFields];
+	  int contentLength = [[headers objectForKey:@"Content-Length"] intValue];
+	  if (contentLength > _queue.maxContentLength && _queue.maxContentLength) {
+		TTLOG(@"MAX CONTENT LENGTH EXCEEDED (%d) %@", contentLength, _URL);
+		[self cancel];
+	  }
   }
-
+  	
   _responseData = [[NSMutableData alloc] initWithCapacity:contentLength];
 }
 
@@ -181,18 +186,27 @@ static TTURLRequestQueue* gMainQueue = nil;
  
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
   TTNetworkRequestStopped();
+  
+  // Assume if we're not servicing an HTTP url response, it succeeded. Other URL
+  // schemes such as file:// will fail with connection:didFailWithError:
+  int statusCode = 200;
+  
+  if ([_response isKindOfClass:[NSHTTPURLResponse class]]) {  
+    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)_response;
+	statusCode = httpResponse.statusCode;
+  }
 
-  if (_response.statusCode == 200) {
+  if (statusCode == 200) {
     [_queue performSelector:@selector(loader:didLoadResponse:data:) withObject:self
       withObject:_response withObject:_responseData];
   } else {
-    TTLOG(@"  FAILED LOADING (%d) %@", _response.statusCode, _URL);
-    NSError* error = [NSError errorWithDomain:NSURLErrorDomain code:_response.statusCode
+    TTLOG(@"  FAILED LOADING (%d) %@", statusCode, _URL);
+    NSError* error = [NSError errorWithDomain:NSURLErrorDomain code:statusCode
       userInfo:nil];
     [_queue performSelector:@selector(loader:didFailLoadWithError:) withObject:self
       withObject:error];
   }
-
+  
   TT_RELEASE_SAFELY(_responseData);
   TT_RELEASE_SAFELY(_connection);
 }
@@ -463,7 +477,7 @@ static TTURLRequestQueue* gMainQueue = nil;
   [_loaders removeObjectForKey:loader.cacheKey];
 }
 
-- (void)loader:(TTRequestLoader*)loader didLoadResponse:(NSHTTPURLResponse*)response data:(id)data {
+- (void)loader:(TTRequestLoader*)loader didLoadResponse:(NSURLResponse*)response data:(id)data {
   [loader retain];
   [self removeLoader:loader];
   
