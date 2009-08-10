@@ -355,7 +355,8 @@
 }
 
 - (void)dealloc {
-  TT_RELEASE_TIMER(_fakeSearchTimer);
+  TT_INVALIDATE_TIMER(_fakeSearchTimer);
+  TT_RELEASE_SAFELY(_fakeSearchTimer);
   TT_RELEASE_SAFELY(_delegates);
   TT_RELEASE_SAFELY(_allNames);
   TT_RELEASE_SAFELY(_names);
@@ -400,7 +401,8 @@
 
 - (void)cancel {
   if (_fakeSearchTimer) {
-    TT_RELEASE_TIMER(_fakeSearchTimer);
+    TT_INVALIDATE_TIMER(_fakeSearchTimer);
+    TT_RELEASE_SAFELY(_fakeSearchTimer);
     [_delegates perform:@selector(modelDidCancelLoad:) withObject:self];
   }
 }
@@ -418,7 +420,8 @@
   
   if (text.length) {
     if (_fakeSearchDuration) {
-      TT_RELEASE_TIMER(_fakeSearchTimer);
+      TT_INVALIDATE_TIMER(_fakeSearchTimer);
+      TT_RELEASE_SAFELY(_fakeSearchTimer);
       _fakeSearchTimer = [NSTimer scheduledTimerWithTimeInterval:_fakeSearchDuration target:self
                                 selector:@selector(fakeSearchReady:) userInfo:text repeats:NO];
       [_delegates perform:@selector(modelDidStartLoad:) withObject:self];
