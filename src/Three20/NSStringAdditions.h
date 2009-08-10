@@ -28,15 +28,15 @@
  */
 - (NSString*)stringByRemovingHTMLTags;
 
-/**
- * Converts the string to an object using TTURLMap.
- */
-- (id)objectValue;
-
-/**
- * Opens a URL with the string using TTURLMap.
- */
-- (void)openURL;
-- (void)openURLFromButton:(UIView*)button;
+///**
+// * Converts the string to an object using TTURLMap.
+// */
+//- (id)objectValue;
+//
+///**
+// * Opens a URL with the string using TTURLMap.
+// */
+//- (void)openURL;
+//- (void)openURLFromButton:(UIView*)button;
 
 @end

@@ -19,11 +19,11 @@
 /**
  * Converts the object to a URL using TTURLMap.
  */
-@property(nonatomic,readonly) NSString* URLValue;
+//@property(nonatomic,readonly) NSString* URLValue;
 
 /**
  * Converts the object to a specially-named URL using TTURLMap.
  */
-- (NSString*)URLValueWithName:(NSString*)name;
+//- (NSString*)URLValueWithName:(NSString*)name;
 
 @end

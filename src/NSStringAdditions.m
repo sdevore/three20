@@ -136,17 +136,17 @@
   }
 }
 
-- (id)objectValue {
-  return [[TTNavigator navigator].URLMap objectForURL:self];
-}
-
-- (void)openURL {
-  [[TTNavigator navigator] openURL:self animated:YES];
-}
-
-- (void)openURLFromButton:(UIView*)button {
-  NSDictionary* query = [NSDictionary dictionaryWithObjectsAndKeys:button, @"__target__", nil];
-  [[TTNavigator navigator] openURL:self query:query animated:YES];
-}
+//- (id)objectValue {
+//  return [[TTNavigator navigator].URLMap objectForURL:self];
+//}
+//
+//- (void)openURL {
+//  [[TTNavigator navigator] openURL:self animated:YES];
+//}
+//
+//- (void)openURLFromButton:(UIView*)button {
+//  NSDictionary* query = [NSDictionary dictionaryWithObjectsAndKeys:button, @"__target__", nil];
+//  [[TTNavigator navigator] openURL:self query:query animated:YES];
+//}
 
 @end
